@@ -69,7 +69,6 @@ namespace PaladinsCollectDemGems.tools
 			return Control.MousePosition;
 		}
 
-
 		/// <summary>
 		/// Executes a set of mouse events at a specific position on the screen
 		/// </summary>

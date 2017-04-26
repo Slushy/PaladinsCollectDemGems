@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PaladinsCollectDemGems.native
+namespace PaladinsCollectDemGems.tools.native
 {
 	/// <summary>
 	/// Provides access to the windows native layer

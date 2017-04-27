@@ -16,7 +16,7 @@ namespace PaladinsCollectDemGems
 
 			try {
 				SteamGame paladins = Steam.LaunchGame(PALADINS_STEAM_GAME_ID);
-				
+
 				MessageBox.Show("Success");
 			}
 			catch (InvalidSteamUserException ex) {

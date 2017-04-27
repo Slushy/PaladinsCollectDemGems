@@ -69,6 +69,10 @@ namespace PaladinsCollectDemGems.game
 				Thread.Sleep(100);
 
 			// At this point the game is running (possibly not yet foregrounded)
+			while (!game.HasWindowHandle)
+				Thread.Sleep(100);
+
+			// Game should now be foregrounded
 			return game;
 		}
 	}

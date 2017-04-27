@@ -1,6 +1,7 @@
 ﻿using PaladinsCollectDemGems.tools.native;
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 
 namespace PaladinsCollectDemGems.game
 {
@@ -29,6 +30,7 @@ namespace PaladinsCollectDemGems.game
 
 		private readonly string _registryLocation;
 		private SteamGameState _gameStates = 0;
+		private Process _gameProcess = null;
 
 		/// <summary>
 		/// Returns the Steam specific game ID that represents this game
@@ -39,6 +41,10 @@ namespace PaladinsCollectDemGems.game
 		public bool IsLaunching { get { return CheckGameState(SteamGameState.Launching); } }
 		public bool IsRunning { get { return CheckGameState(SteamGameState.Running); } }
 		public bool IsUpdating { get { return CheckGameState(SteamGameState.Updating); } }
+
+		public bool HasWindowHandle { 
+			get { return CheckIfValidProcessAndWindow(); }
+		}
 
 		/// <summary>
 		/// Constructs a new SteamGame object from the gameId
@@ -85,6 +91,33 @@ namespace PaladinsCollectDemGems.game
 			}
 
 			return isValid;
+		}
+
+		private bool CheckIfValidProcessAndWindow() {
+			// If the game isn't even running, just clear the process
+			if ((_gameStates & SteamGameState.Running) == 0) { 
+				_gameProcess = null;
+				return false;
+			}
+
+			// For now if the game process is already set and hasn't exited we'll just return
+			if (_gameProcess != null && !_gameProcess.HasExited)
+				return true;
+			
+			// The game process isn't yet set and the process is running, so find.. er.. set it.
+			Process[] processCandidates = Process.GetProcessesByName("SteamLauncherUI");
+			foreach (Process process in processCandidates)
+			{
+				if (!string.IsNullOrEmpty(process.MainWindowTitle) && process.MainWindowTitle.Equals("Paladins")) {
+					Console.WriteLine("Found Game Process: {0}", process.Id);
+					_gameProcess = process;
+					return true;
+				}
+			}
+
+			Console.WriteLine("Not yet found game process");
+			_gameProcess = null;
+			return false;
 		}
 	}
 }

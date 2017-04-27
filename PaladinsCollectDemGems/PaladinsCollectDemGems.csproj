@@ -49,7 +49,11 @@
   <ItemGroup>
     <Compile Include="exceptions\GameUpdatingException.cs" />
     <Compile Include="exceptions\GameNotInstalledException.cs" />
+    <Compile Include="exceptions\InvalidSteamUserException.cs" />
     <Compile Include="game\Steam.cs" />
+    <Compile Include="game\SteamGame.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>

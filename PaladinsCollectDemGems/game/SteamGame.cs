@@ -30,7 +30,7 @@ namespace PaladinsCollectDemGems.game
 
 		private readonly string _registryLocation;
 		private SteamGameState _gameStates = 0;
-		private Process _gameProcess = null;
+		private GameWindow _gameWindow = null;
 
 		/// <summary>
 		/// Returns the Steam specific game ID that represents this game
@@ -42,8 +42,12 @@ namespace PaladinsCollectDemGems.game
 		public bool IsRunning { get { return CheckGameState(SteamGameState.Running); } }
 		public bool IsUpdating { get { return CheckGameState(SteamGameState.Updating); } }
 
-		public bool HasWindowHandle { 
-			get { return CheckIfValidProcessAndWindow(); }
+		/// <summary>
+		/// Returns the game window of the currently running game, or null if not found or not yet loaded.
+		/// This property will return up-to-date information when called.
+		/// </summary>
+		public GameWindow Window { 
+			get { return updateGameWindow(); }
 		}
 
 		/// <summary>
@@ -61,7 +65,7 @@ namespace PaladinsCollectDemGems.game
 		/// <param name="gameState">the state to check if the game is in</param>
 		/// <param name="forceUpdate">whether to pull the latest state information from the registry</param>
 		/// <returns>true if the game is in the specified state, otherwise false</returns>
-		public bool CheckGameState(SteamGameState gameState, bool forceUpdate = true)
+		private bool CheckGameState(SteamGameState gameState, bool forceUpdate = true)
 		{
 			// Update to latest registry value if forced update
 			if (forceUpdate)
@@ -93,31 +97,20 @@ namespace PaladinsCollectDemGems.game
 			return isValid;
 		}
 
-		private bool CheckIfValidProcessAndWindow() {
-			// If the game isn't even running, just clear the process
-			if ((_gameStates & SteamGameState.Running) == 0) { 
-				_gameProcess = null;
-				return false;
+		// Updates and returns the game window process by returning the currently existing and valid window, or by trying to find the process for the game.
+		private GameWindow updateGameWindow() {
+			// Check if the game is even running, but we do not pull latest from registry. This isn't very important
+			// because if the game isn't even running it will never find a window in the next step. This is simply a
+			// quick and easy cost-effective way to short-circuit the check
+			if (!CheckGameState(SteamGameState.Running, false)) {
+				_gameWindow = null;
+			}
+			else if (_gameWindow == null || _gameWindow.HasExited) {
+				// The process is running, but the game window isn't valid or isn't set, so try to find one that matches (will return null if cannot find)
+				_gameWindow = GameWindow.FindByProcessName("SteamLauncherUI", "Paladins");
 			}
 
-			// For now if the game process is already set and hasn't exited we'll just return
-			if (_gameProcess != null && !_gameProcess.HasExited)
-				return true;
-			
-			// The game process isn't yet set and the process is running, so find.. er.. set it.
-			Process[] processCandidates = Process.GetProcessesByName("SteamLauncherUI");
-			foreach (Process process in processCandidates)
-			{
-				if (!string.IsNullOrEmpty(process.MainWindowTitle) && process.MainWindowTitle.Equals("Paladins")) {
-					Console.WriteLine("Found Game Process: {0}", process.Id);
-					_gameProcess = process;
-					return true;
-				}
-			}
-
-			Console.WriteLine("Not yet found game process");
-			_gameProcess = null;
-			return false;
+			return _gameWindow;
 		}
 	}
 }

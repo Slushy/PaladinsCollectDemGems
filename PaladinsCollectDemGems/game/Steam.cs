@@ -64,13 +64,11 @@ namespace PaladinsCollectDemGems.game
 				}
 			}
 
-			// Wait until the game's process has updated to be running
-			while (!game.IsRunning)
-				Thread.Sleep(100);
-
-			// At this point the game is running (possibly not yet foregrounded)
-			while (!game.HasWindowHandle)
-				Thread.Sleep(100);
+			// Wait until the game's process has updated to be running with a valid window handle
+			// before returning the game object to the consumer.
+			// TODO: Probably want to have a max time limit or check counter so this doesn't go on forever.
+			while (!game.IsRunning || game.Window == null)
+				Thread.Sleep(500);
 
 			// Game should now be foregrounded
 			return game;

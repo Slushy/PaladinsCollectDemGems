@@ -1,5 +1,6 @@
 ﻿using PaladinsCollectDemGems.exceptions;
 using PaladinsCollectDemGems.game;
+using PaladinsCollectDemGems.tools;
 using System;
 using System.Threading;
 using System.Windows.Forms;
@@ -33,11 +34,16 @@ namespace PaladinsCollectDemGems
 						Console.WriteLine("Window is now foregrounded");
 				}
 
-				Thread.Sleep(1500);
-
 				paladinsGame.Window.CenterWindow();
 
 				Thread.Sleep(500);
+
+				Keyboard.Type("username");
+				Keyboard.Type(Keyboard.SpecialKey.Tab);
+				Keyboard.Type("testpass");
+				Keyboard.Type(Keyboard.SpecialKey.Enter);
+
+				Thread.Sleep(5000);
 				//MessageBox.Show("Success");
 			}
 			catch (InvalidSteamUserException ex) {

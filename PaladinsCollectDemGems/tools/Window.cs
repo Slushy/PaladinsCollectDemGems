@@ -21,6 +21,7 @@ namespace PaladinsCollectDemGems.game
 		public bool IsForegrounded { get { return WinWindowInterop.IsActiveWindow(Handle); } }
 		public int Height { get { return _windowPosition.Bottom - _windowPosition.Top; } }
 		public int Width { get { return _windowPosition.Right - _windowPosition.Left; } }
+		public WinWindowInterop.RECT Position { get { return _windowPosition; } }
 
 		#endregion
 
@@ -43,11 +44,11 @@ namespace PaladinsCollectDemGems.game
 		/// not foregrounded before this call, it will still not be foregrounded, but when shown it will be in the center of the screen).
 		/// </summary>
 		public void CenterWindow() {
-			UpdateWindowPosition();
-
 			int xPos = (Screen.Width / 2) - (Width / 2);
 			int yPos = (Screen.Height / 2) - (Height / 2);
 			WinWindowInterop.MoveWindow(Handle, xPos, yPos);
+
+			UpdateWindowPosition();
 		}
 
 		/// <summary>

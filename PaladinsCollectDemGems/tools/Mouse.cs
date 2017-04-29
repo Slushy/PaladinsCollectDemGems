@@ -25,7 +25,7 @@ namespace PaladinsCollectDemGems.tools
 		/// <param name="xPos">x position in screen coordinates</param>
 		/// <param name="yPos">y position in screen coordinates</param>
 		/// <param name="retainClickPosition">determines if the cursor should stay at the click position, or reset to the starting before the click</param>
-		public static void LeftClick(int xPos, int yPos, bool retainClickPosition = true)
+		public static void LeftClick(int xPos, int yPos, bool retainClickPosition = false)
 		{
 			ExecuteMouseEvents(xPos, yPos, retainClickPosition, MouseEvent.LeftClickDown, MouseEvent.LeftClickUp);
 		}
@@ -45,7 +45,7 @@ namespace PaladinsCollectDemGems.tools
 		/// <param name="xPos">x position in screen coordinates</param>
 		/// <param name="yPos">y position in screen coordinates</param>
 		/// <param name="retainClickPosition">determines if the cursor should stay at the click position, or reset to the starting before the click</param>
-		public static void RightClick(int xPos, int yPos, bool retainClickPosition = true)
+		public static void RightClick(int xPos, int yPos, bool retainClickPosition = false)
 		{
 			ExecuteMouseEvents(xPos, yPos, retainClickPosition, MouseEvent.RightClickDown, MouseEvent.RightClickUp);
 		}

@@ -51,6 +51,8 @@
     <Compile Include="exceptions\GameNotInstalledException.cs" />
     <Compile Include="exceptions\InvalidSteamUserException.cs" />
     <Compile Include="tools\native\WinCursorInteropDefines.cs" />
+    <Compile Include="tools\native\WinWindowInterop.cs" />
+    <Compile Include="tools\native\WinWindowInteropDefines.cs" />
     <Compile Include="tools\Screen.cs" />
     <Compile Include="game\Steam.cs" />
     <Compile Include="game\SteamGame.cs">

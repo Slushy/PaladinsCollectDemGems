@@ -1,6 +1,7 @@
 ﻿using PaladinsCollectDemGems.exceptions;
 using PaladinsCollectDemGems.game;
 using System;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace PaladinsCollectDemGems
@@ -15,9 +16,29 @@ namespace PaladinsCollectDemGems
 			InitializeComponent();
 
 			try {
-				SteamGame paladins = Steam.LaunchGame(PALADINS_STEAM_GAME_ID);
+				SteamGame paladinsGame = Steam.LaunchGame(PALADINS_STEAM_GAME_ID);
 
-				MessageBox.Show("Success");
+				if (paladinsGame.Window.IsForegrounded)
+					Console.WriteLine("Window is foregrounded");
+				else
+				{
+					Console.WriteLine("Window is NOT foregrounded");
+
+					if (paladinsGame.Window.SetForeground())
+						Console.WriteLine("Set Window foreground success");
+					else
+						Console.WriteLine("Set Window foreground failed");
+
+					if (paladinsGame.Window.IsForegrounded)
+						Console.WriteLine("Window is now foregrounded");
+				}
+
+				Thread.Sleep(1500);
+
+				paladinsGame.Window.CenterWindow();
+
+				Thread.Sleep(500);
+				//MessageBox.Show("Success");
 			}
 			catch (InvalidSteamUserException ex) {
 				MessageBox.Show("Invalid Steam User");
@@ -31,7 +52,7 @@ namespace PaladinsCollectDemGems
 				MessageBox.Show("Game is currently updating and in bad state");
 			}
 			catch (Exception ex) {
-				MessageBox.Show("Unknown error occurred: {0}", ex.Message);
+				MessageBox.Show(string.Format("Unknown error occurred: {0}", ex.Message));
 			}
 
 			

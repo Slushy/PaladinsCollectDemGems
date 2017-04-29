@@ -1,7 +1,6 @@
 ﻿using PaladinsCollectDemGems.tools.native;
 using System;
 using System.ComponentModel;
-using System.Diagnostics;
 
 namespace PaladinsCollectDemGems.game
 {
@@ -30,7 +29,7 @@ namespace PaladinsCollectDemGems.game
 
 		private readonly string _registryLocation;
 		private SteamGameState _gameStates = 0;
-		private GameWindow _gameWindow = null;
+		private Window _gameWindow = null;
 
 		/// <summary>
 		/// Returns the Steam specific game ID that represents this game
@@ -42,11 +41,16 @@ namespace PaladinsCollectDemGems.game
 		public bool IsRunning { get { return CheckGameState(SteamGameState.Running); } }
 		public bool IsUpdating { get { return CheckGameState(SteamGameState.Updating); } }
 
+		// TODO: Just to get it working plz
+		public const string ProcessPhase1 = "SteamLauncherUI";
+		public const string ProcessPhase2 = "Paladins";
+		private readonly string[] _processPhases = { ProcessPhase1, ProcessPhase2 };
+
 		/// <summary>
 		/// Returns the game window of the currently running game, or null if not found or not yet loaded.
 		/// This property will return up-to-date information when called.
 		/// </summary>
-		public GameWindow Window { 
+		public Window Window { 
 			get { return updateGameWindow(); }
 		}
 
@@ -98,7 +102,7 @@ namespace PaladinsCollectDemGems.game
 		}
 
 		// Updates and returns the game window process by returning the currently existing and valid window, or by trying to find the process for the game.
-		private GameWindow updateGameWindow() {
+		private Window updateGameWindow() {
 			// Check if the game is even running, but we do not pull latest from registry. This isn't very important
 			// because if the game isn't even running it will never find a window in the next step. This is simply a
 			// quick and easy cost-effective way to short-circuit the check
@@ -107,7 +111,12 @@ namespace PaladinsCollectDemGems.game
 			}
 			else if (_gameWindow == null || _gameWindow.HasExited) {
 				// The process is running, but the game window isn't valid or isn't set, so try to find one that matches (will return null if cannot find)
-				_gameWindow = GameWindow.FindByProcessName("SteamLauncherUI", "Paladins");
+				//_gameWindow = GameWindow.FindByProcessName("SteamLauncherUI", "Paladins");
+				foreach (string phase in _processPhases) {
+					_gameWindow = Window.FindByProcessName(phase);
+					if (_gameWindow != null)
+						break;
+				}
 			}
 
 			return _gameWindow;

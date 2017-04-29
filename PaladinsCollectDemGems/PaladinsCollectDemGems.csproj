@@ -69,6 +69,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="tools\Mouse.cs" />
     <Compile Include="tools\native\WinRegistry.cs" />
+    <Compile Include="tools\Window.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

@@ -1,5 +1,7 @@
 ﻿using PaladinsCollectDemGems.tools.native;
+using System;
 using System.Drawing;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using MouseEvent = PaladinsCollectDemGems.tools.native.WinCursorInterop.MouseEvent;
 
@@ -11,11 +13,24 @@ namespace PaladinsCollectDemGems.tools
 	public static class Mouse
 	{
 		/// <summary>
+		/// Struct that defines a mouse position and mouse cursor type
+		/// </summary>
+		public struct MouseInfo {
+			public readonly Point Position;
+			public readonly IntPtr CursorHandle;
+
+			public MouseInfo(Point position, IntPtr cursorHandle) {
+				Position = position;
+				CursorHandle = cursorHandle;
+			}
+		};
+
+		/// <summary>
 		/// Performs a left click at the current cursor position
 		/// </summary>
 		public static void LeftClick()
 		{
-			Point currPos = GetMousePosition();
+			Point currPos = GetMouseInfo().Position;
 			LeftClick(currPos.X, currPos.Y);
 		}
 
@@ -35,7 +50,7 @@ namespace PaladinsCollectDemGems.tools
 		/// </summary>
 		public static void RightClick()
 		{
-			Point currPos = GetMousePosition();
+			Point currPos = GetMouseInfo().Position;
 			RightClick(currPos.X, currPos.Y);
 		}
 
@@ -61,12 +76,13 @@ namespace PaladinsCollectDemGems.tools
 		}
 
 		/// <summary>
-		/// Retrieves the current mouse position
+		/// Retrieves the current mouse information which contains the screen position and cursor type
 		/// </summary>
 		/// <returns>Point struct containing current x-y cursor position in screen coordinates</returns>
-		public static Point GetMousePosition()
+		public static MouseInfo GetMouseInfo()
 		{
-			return Control.MousePosition;
+			WinCursorInterop.CursorInfo cursorInfo = WinCursorInterop.GetCursorInfo();
+			return new MouseInfo(cursorInfo.ptScreenPos, cursorInfo.hCursor);
 		}
 
 		/// <summary>
@@ -78,7 +94,7 @@ namespace PaladinsCollectDemGems.tools
 		/// <param name="mouseEvents">the mouse events to execute</param>
 		private static void ExecuteMouseEvents(int xPos, int yPos, bool retainNewPosition, params MouseEvent[] mouseEvents)
 		{
-			Point currPos = GetMousePosition();
+			Point currPos = GetMouseInfo().Position;
 
 			// First move the cursor (must be at the position before executing the events)
 			MoveTo(xPos, yPos);

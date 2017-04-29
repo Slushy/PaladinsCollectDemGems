@@ -16,6 +16,9 @@ namespace PaladinsCollectDemGems.tools.native
 		[DllImport("user32.dll")]
 		private static extern void mouse_event(int dwFlags, int dx, int dy, int dwData, int dwExtraInfo);
 
+		[DllImport("user32.dll")]
+		private static extern bool GetCursorInfo(out CursorInfo pci);
+
 		#endregion
 
 		/// <summary>
@@ -57,5 +60,17 @@ namespace PaladinsCollectDemGems.tools.native
 		{
 			SendMouseEvent((int)mouseEvent, dx, dy, dwData, dwExtraInfo);
 		}
+
+		/// <summary>
+		/// Retrieves the info for the current state of the cursor
+		/// </summary>
+		/// <returns>struct storing info about the current state of the cursor</returns>
+		public static CursorInfo GetCursorInfo() {
+			CursorInfo cursorInfo;
+			cursorInfo.cbSize = Marshal.SizeOf(typeof(CursorInfo));
+			GetCursorInfo(out cursorInfo);
+
+			return cursorInfo;
+		} 
 	}
 }

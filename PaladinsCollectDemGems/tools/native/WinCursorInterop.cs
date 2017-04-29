@@ -1,34 +1,22 @@
-﻿using System;
+﻿using System.Runtime.InteropServices;
 
 namespace PaladinsCollectDemGems.tools.native
 {
 	/// <summary>
 	/// Provides access to the windows native layer
 	/// </summary>
-	public static class WinCursorInterop
+	public static partial class WinCursorInterop
 	{
-		/// <summary>
-		/// Mouse actions you can perform
-		/// </summary>
-		[Flags]
-		public enum MouseEvent
-		{
-			Move = 0x0001,
-			LeftClickDown = 0x0002,
-			LeftClickUp = 0x0004,
-			RightClickDown = 0x0008,
-			RightClickUp = 0x0010,
-			MiddleClickDown = 0x0020,
-			MiddleClickUp = 0x0040,
-			Absolute = 0x8000
-		};
+		#region DLLImports
 
 		//This is a replacement for Cursor.Position in WinForms
-		[System.Runtime.InteropServices.DllImport("user32.dll")]
+		[DllImport("user32.dll")]
 		private static extern bool SetCursorPos(int x, int y);
 
-		[System.Runtime.InteropServices.DllImport("user32.dll")]
+		[DllImport("user32.dll")]
 		private static extern void mouse_event(int dwFlags, int dx, int dy, int dwData, int dwExtraInfo);
+
+		#endregion
 
 		/// <summary>
 		/// Moves the cursor to the specified screen coordinates. If the new coordinates are not within the screen rectangle set by the most

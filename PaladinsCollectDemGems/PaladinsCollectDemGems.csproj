@@ -50,7 +50,7 @@
     <Compile Include="exceptions\GameUpdatingException.cs" />
     <Compile Include="exceptions\GameNotInstalledException.cs" />
     <Compile Include="exceptions\InvalidSteamUserException.cs" />
-    <Compile Include="game\GameWindow.cs" />
+    <Compile Include="tools\Screen.cs" />
     <Compile Include="game\Steam.cs" />
     <Compile Include="game\SteamGame.cs">
       <SubType>Code</SubType>
@@ -70,6 +70,7 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

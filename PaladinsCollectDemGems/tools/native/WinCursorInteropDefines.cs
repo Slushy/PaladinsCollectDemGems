@@ -29,6 +29,9 @@ namespace PaladinsCollectDemGems.tools.native
 		[StructLayout(LayoutKind.Sequential)]
 		public struct CursorInfo
 		{
+			/// <summary>
+			/// Must be set each time to the size of this struct
+			/// </summary>
 			public Int32 cbSize;
 
 			/// <summary>
@@ -40,6 +43,9 @@ namespace PaladinsCollectDemGems.tools.native
 			/// </summary>
 			public IntPtr hCursor;
 
+			/// <summary>
+			/// The screen coordinates of the cursor at this time
+			/// </summary>
 			public Point ptScreenPos;
 		}
 	}

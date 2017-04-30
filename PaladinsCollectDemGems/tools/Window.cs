@@ -15,8 +15,8 @@ namespace PaladinsCollectDemGems.game
 		private readonly Process _process;
 		private WinWindowInterop.RECT _windowPosition = new WinWindowInterop.RECT();
 
-		private IntPtr Handle { get { return Process.MainWindowHandle; } }
-		private Process Process { get { _process.Refresh(); return _process; } }
+		private IntPtr Handle { get { return WindowProcess.MainWindowHandle; } }
+		private Process WindowProcess { get { _process.Refresh(); return _process; } }
 
 		#region Public Accessors
 
@@ -24,10 +24,10 @@ namespace PaladinsCollectDemGems.game
 		{
 			get
 			{
-				return Process.HasExited;
+				return WindowProcess.HasExited;
 			}
 		}
-		public string ProcessName { get { return Process.ProcessName; } }
+		public string ProcessName { get { return WindowProcess.ProcessName; } }
 		public bool IsForegrounded { get { return WinWindowInterop.IsActiveWindow(Handle); } }
 		public int Height
 		{
@@ -61,6 +61,15 @@ namespace PaladinsCollectDemGems.game
 		public bool SetForeground()
 		{
 			return WinWindowInterop.SetWindowActive(Handle);
+		}
+
+		public void Close() {
+			if (!WindowProcess.CloseMainWindow()) {
+				Console.WriteLine("Failed to close main window, killing process");
+				WindowProcess.Kill();
+			}
+			
+			WindowProcess.WaitForExit();
 		}
 
 		public Bitmap CaptureImage()

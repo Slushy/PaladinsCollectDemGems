@@ -1,5 +1,6 @@
 ﻿using PaladinsCollectDemGems.exceptions;
 using PaladinsCollectDemGems.tools.native;
+using System;
 using System.Diagnostics;
 using System.Threading;
 
@@ -72,6 +73,18 @@ namespace PaladinsCollectDemGems.game
 
 			// Game should now be foregrounded
 			return game;
+		}
+
+		public static bool CloseGame(SteamGame game) {
+			Console.WriteLine("Attempting to close game.");
+			game.Window?.Close();
+
+			while (game.IsRunning) {
+				Thread.Sleep(500);
+				Console.WriteLine("Attempting to close game.");
+			}
+
+			return game.Window == null;
 		}
 	}
 }

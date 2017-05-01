@@ -50,11 +50,18 @@
     <Compile Include="exceptions\GameUpdatingException.cs" />
     <Compile Include="exceptions\GameNotInstalledException.cs" />
     <Compile Include="exceptions\InvalidSteamUserException.cs" />
+    <Compile Include="game\InstructionSet.cs" />
+    <Compile Include="game\GameRunner.cs" />
+    <Compile Include="Paladins\InGameRewardInstructionSet.cs" />
+    <Compile Include="Paladins\LoadingGameScreenInstructionSet.cs" />
+    <Compile Include="Paladins\LoginInstructionSet.cs" />
+    <Compile Include="Paladins\PaladinsGameRunner.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="tools\ImageWizard.cs" />
     <Compile Include="tools\Keyboard.cs" />
     <Compile Include="tools\native\WinCursorInteropDefines.cs" />
     <Compile Include="tools\native\WinWindowInterop.cs" />
@@ -90,8 +97,9 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="resources\thumbnail.png" />
-    <Content Include="resources\thumbnail2.png" />
+    <Content Include="resources\Paladins\images\DailyRewardScreenThumbnail.png" />
+    <Content Include="resources\Paladins\images\LoginScreenThumbnail.png" />
+    <Content Include="resources\Paladins\images\ReadyToPlayScreenThumbnail.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

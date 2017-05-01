@@ -1,6 +1,6 @@
 ﻿namespace PaladinsCollectDemGems
 {
-	partial class MainForm
+	partial class BackgroundCover
 	{
 		/// <summary>
 		/// Required designer variable.
@@ -28,36 +28,22 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.button1 = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			// 
-			// button1
-			// 
-			this.button1.Location = new System.Drawing.Point(42, 52);
-			this.button1.Name = "button1";
-			this.button1.Size = new System.Drawing.Size(171, 86);
-			this.button1.TabIndex = 0;
-			this.button1.Text = "Start Game";
-			this.button1.UseVisualStyleBackColor = true;
-			this.button1.Click += new System.EventHandler(this.button1_Click);
-			// 
-			// MainForm
+			// BackgroundCover
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.BackColor = System.Drawing.Color.DimGray;
-			this.ClientSize = new System.Drawing.Size(256, 190);
-			this.Controls.Add(this.button1);
-			this.Name = "MainForm";
-			this.Text = "Paladins Game Config";
-			this.Load += new System.EventHandler(this.MainForm_Load);
+			this.BackColor = System.Drawing.Color.Black;
+			this.ClientSize = new System.Drawing.Size(284, 261);
+			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+			this.Name = "BackgroundCover";
+			this.Text = "BackgroundCover";
+			this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
 			this.ResumeLayout(false);
 
 		}
 
 		#endregion
-
-		private System.Windows.Forms.Button button1;
 	}
 }
-

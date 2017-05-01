@@ -3,6 +3,7 @@ using PaladinsCollectDemGems.Paladins;
 using System;
 using System.ComponentModel;
 using System.Drawing;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace PaladinsCollectDemGems
@@ -12,7 +13,7 @@ namespace PaladinsCollectDemGems
 		BackgroundWorker launchGameWorker = new BackgroundWorker();
 		GameRunner gameRunner = new PaladinsGameRunner();
 
-		FormBorderStyle _startingBorderStyle = FormBorderStyle.None;
+		BackgroundCover _backgroundCover = new BackgroundCover();
 
 		public MainForm()
 		{
@@ -24,9 +25,6 @@ namespace PaladinsCollectDemGems
 			launchGameWorker.RunWorkerCompleted += LaunchGameWorker_RunWorkerCompleted;
 			launchGameWorker.WorkerReportsProgress = true;
 			launchGameWorker.WorkerSupportsCancellation = true;
-
-			// Setting defaults
-			_startingBorderStyle = FormBorderStyle;
 		}
 
 		private void MainForm_Load(object sender, EventArgs e)
@@ -39,13 +37,9 @@ namespace PaladinsCollectDemGems
 		/// </summary>
 		private void ResetDefaultStyles()
 		{
-			// Want to reset it back to normal before minimizing on purpose so then when re-opening 
-			// the last size it was is normal, not maxed.
-			WindowState = FormWindowState.Normal;
-			WindowState = FormWindowState.Minimized;
-			FormBorderStyle = _startingBorderStyle;
-			BackColor = DefaultBackColor;
-			button1.Show();
+			// Hide the background and show this form
+			_backgroundCover.Hide();
+			Show();
 		}
 
 		// Temp button to get the game running fo testing
@@ -56,11 +50,9 @@ namespace PaladinsCollectDemGems
 				return;
 			}
 
-			// Setting styles of main form
-			WindowState = FormWindowState.Maximized;
-			FormBorderStyle = FormBorderStyle.None;
-			BackColor = Color.Black;
-			button1.Hide();
+			// Hide this form and show the background
+			Hide();
+			_backgroundCover.Show();
 
 			// Starts the background thread to run the game runner
 			launchGameWorker.RunWorkerAsync();

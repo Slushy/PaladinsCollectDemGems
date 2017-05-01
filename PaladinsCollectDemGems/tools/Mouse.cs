@@ -1,8 +1,6 @@
 ﻿using PaladinsCollectDemGems.tools.native;
 using System;
 using System.Drawing;
-using System.Runtime.InteropServices;
-using System.Windows.Forms;
 using MouseEvent = PaladinsCollectDemGems.tools.native.WinCursorInterop.MouseEvent;
 
 namespace PaladinsCollectDemGems.tools

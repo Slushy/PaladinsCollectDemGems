@@ -3,7 +3,7 @@ using PaladinsCollectDemGems.tools.native;
 using System;
 using System.Diagnostics;
 using System.Drawing;
-using System.Management;
+using System.Runtime.InteropServices;
 
 namespace PaladinsCollectDemGems.game
 {
@@ -14,35 +14,16 @@ namespace PaladinsCollectDemGems.game
 	{
 		private readonly Process _process;
 		private WinWindowInterop.RECT _windowPosition = new WinWindowInterop.RECT();
-
-		private IntPtr Handle { get { return Process.MainWindowHandle; } }
-		private Process Process { get { _process.Refresh(); return _process; } }
+		private IntPtr Handle { get { return WindowProcess.MainWindowHandle; } }
+		private Process WindowProcess { get { _process.Refresh(); return _process; } }
 
 		#region Public Accessors
 
-		public bool HasExited
-		{
-			get
-			{
-				return Process.HasExited;
-			}
-		}
-		public string ProcessName { get { return Process.ProcessName; } }
+		public bool HasExited { get { return WindowProcess.HasExited; } }
+		public string ProcessName { get { return WindowProcess.ProcessName; } }
 		public bool IsForegrounded { get { return WinWindowInterop.IsActiveWindow(Handle); } }
-		public int Height
-		{
-			get
-			{
-				return _windowPosition.Bottom - _windowPosition.Top;
-			}
-		}
-		public int Width
-		{
-			get
-			{
-				return _windowPosition.Right - _windowPosition.Left;
-			}
-		}
+		public int Height { get { return _windowPosition.Bottom - _windowPosition.Top; } }
+		public int Width { get { return _windowPosition.Right - _windowPosition.Left; } }
 		public WinWindowInterop.RECT Position { get { return _windowPosition; } }
 
 		#endregion
@@ -63,14 +44,35 @@ namespace PaladinsCollectDemGems.game
 			return WinWindowInterop.SetWindowActive(Handle);
 		}
 
+		/// <summary>
+		/// Force closes the window and waits for the process to exit before returning.
+		/// </summary>
+		public void Close()
+		{
+			if (!WindowProcess.CloseMainWindow())
+			{
+				Console.WriteLine("Failed to close main window, killing process");
+				WindowProcess.Kill();
+			}
+
+			WindowProcess.WaitForExit();
+		}
+
+		/// <summary>
+		/// Takes a picture of the screen at the size and position of the window
+		/// </summary>
+		/// <returns>An image representing a screenshot of the window</returns>
 		public Bitmap CaptureImage()
 		{
+			UpdateWindowPosition();
+
 			Bitmap bitmap = new Bitmap(Width, Height);
 			using (Graphics g = Graphics.FromImage(bitmap as Image))
 			{
 				Size size = new Size(Width, Height);
 				g.CopyFromScreen(new Point(_windowPosition.Left, _windowPosition.Top), Point.Empty, size);
 			}
+
 			return bitmap;
 		}
 

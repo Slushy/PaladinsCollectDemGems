@@ -1,181 +1,102 @@
-﻿using PaladinsCollectDemGems.exceptions;
-using PaladinsCollectDemGems.game;
-using PaladinsCollectDemGems.tools;
+﻿using PaladinsCollectDemGems.game;
+using PaladinsCollectDemGems.Paladins;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+using System.ComponentModel;
 using System.Drawing;
-using System.Drawing.Imaging;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Threading;
 using System.Windows.Forms;
 
 namespace PaladinsCollectDemGems
 {
 	public partial class MainForm : Form
 	{
-		// Move to separate config file or something
-		private const int PALADINS_STEAM_GAME_ID = 444090;
-		private const int IMAGE_SIZE = 256;
-		private const int PIXEL_COUNT = IMAGE_SIZE * IMAGE_SIZE;
+		BackgroundWorker launchGameWorker = new BackgroundWorker();
+		GameRunner gameRunner = new PaladinsGameRunner();
 
-		// To find out which step we are on
-		private Bitmap _step1Image = null;
-		private Bitmap _step2Image = null;
-		private SteamGame _paladinsGame = null;
+		FormBorderStyle _startingBorderStyle = FormBorderStyle.None;
 
 		public MainForm()
 		{
 			InitializeComponent();
+
+			// Assigns event methods for the game thread
+			launchGameWorker.DoWork += launchGameWorker_DoWork;
+			launchGameWorker.ProgressChanged += LaunchGameWorker_ProgressChanged;
+			launchGameWorker.RunWorkerCompleted += LaunchGameWorker_RunWorkerCompleted;
+			launchGameWorker.WorkerReportsProgress = true;
+			launchGameWorker.WorkerSupportsCancellation = true;
+
+			// Setting defaults
+			_startingBorderStyle = FormBorderStyle;
 		}
 
 		private void MainForm_Load(object sender, EventArgs e)
 		{
-			Console.WriteLine("LOADED");
-			this.WindowState = FormWindowState.Maximized;
-			this.BackColor = Color.Black;
-			this.FormBorderStyle = FormBorderStyle.None;
-
-			_step1Image = (Bitmap)Image.FromFile(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "..\\..\\resources\\thumbnail.png"));
-			_step2Image = (Bitmap)Image.FromFile(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "..\\..\\resources\\thumbnail2.png"));
-
-			// Start the process
-			var th = new Thread(startPaladinsProcess);
-			th.Start();
-
-			var list = Process.GetProcesses();
-
-			Console.WriteLine("HI");
+			ResetDefaultStyles();
 		}
 
-		public void startPaladinsProcess()
+		/// <summary>
+		/// Resets the form to default appearance
+		/// </summary>
+		private void ResetDefaultStyles()
 		{
-			try
-			{
-				_paladinsGame = Steam.LaunchGame(PALADINS_STEAM_GAME_ID);
-
-				// We can do this multiple times
-				Thread.Sleep(100);
-				_paladinsGame.Window.SetForeground();
-				Thread.Sleep(100);
-				_paladinsGame.Window.CenterWindow();
-				Thread.Sleep(100);
-
-				// Capture the window image to figure out what step we are on
-				Bitmap windowImage = null;
-				if (_paladinsGame.Window.IsForegrounded)
-				{
-					windowImage = (Bitmap)_paladinsGame.Window.CaptureImage()
-						.GetThumbnailImage(IMAGE_SIZE, IMAGE_SIZE, () => false, IntPtr.Zero);
-					windowImage.Save(@"C:\\temp\\currentScreen.png", ImageFormat.Png);
-				}
-				else
-					throw new Exception("App is not foregrounded after trying to foreground");
-
-				List<bool> currPixels = GetHash(windowImage);
-				List<bool> step1Pixels = GetHash(_step1Image);
-				List<bool> step2Pixels = GetHash(_step2Image);
-
-				double step1Percentage = pixelCompare(currPixels, step1Pixels);
-				double step2Percentage = pixelCompare(currPixels, step2Pixels);
-
-				if (step1Percentage > step2Percentage)
-					executeStep1();
-
-				// yaaaa
-				executeStep2();
-
-				executeStep3();
-			}
-			catch (InvalidSteamUserException ex)
-			{
-				MessageBox.Show("Invalid Steam User");
-			}
-			catch (GameNotInstalledException ex)
-			{
-				MessageBox.Show("Game is invalid or not installed");
-			}
-			catch (GameUpdatingException ex)
-			{
-				MessageBox.Show("Game is currently updating and in bad state");
-			}
-			catch (Exception ex)
-			{
-				MessageBox.Show(string.Format("Unknown error occurred: {0}", ex.Message));
-			}
-
-			Console.WriteLine("We did it reddit");
+			// Want to reset it back to normal before minimizing on purpose so then when re-opening 
+			// the last size it was is normal, not maxed.
+			WindowState = FormWindowState.Normal;
+			WindowState = FormWindowState.Minimized;
+			FormBorderStyle = _startingBorderStyle;
+			BackColor = DefaultBackColor;
+			button1.Show();
 		}
 
-		private void executeStep1()
+		// Temp button to get the game running fo testing
+		private void button1_Click(object sender, EventArgs e)
 		{
-			Console.WriteLine("STARTING STEP 1");
-			// TODO: Make sure input is selected
-
-			Keyboard.Type("xxxxx");
-			Keyboard.Type(Keyboard.SpecialKey.Tab);
-			Keyboard.Type("xxxxx");
-			Keyboard.Type(Keyboard.SpecialKey.Enter);
-
-			// TODO: Verify i'm on step two
-			Thread.Sleep(5000);
-
-			Console.WriteLine("Step 1 complete");
-		}
-
-		private void executeStep2()
-		{
-			Console.WriteLine("STARTING STEP 2");
-
-			// This selects the play button
-			int mouseX = _paladinsGame.Window.Position.Left + (int)(_paladinsGame.Window.Width * 0.878799);
-			int mouseY = _paladinsGame.Window.Position.Top + (int)(_paladinsGame.Window.Height * 0.692199);
-			Mouse.LeftClick(mouseX, mouseY);
-
-			Console.WriteLine("Step 2 complete");
-		}
-
-		private void executeStep3()
-		{
-			Console.WriteLine("STARTING STEP 3");
-			Thread.Sleep(10000);
-
-			for (int i = 0; i < 5; i++) {
-				var wind = _paladinsGame.Window;
-				Thread.Sleep(20000);
-				_paladinsGame.Window.SetForeground();
-				Thread.Sleep(5000);
-
-				_paladinsGame.Window.UpdateWindowPosition();
-				Console.WriteLine(string.Format("Width: {0}", _paladinsGame.Window.Width));
-				Console.WriteLine(string.Format("Height: {0}", _paladinsGame.Window.Height));
+			if (gameRunner.IsRunning) {
+				Console.WriteLine("The game runner is already running, cannot start it again.");
+				return;
 			}
-			
 
-			Console.WriteLine("HI");
+			// Setting styles of main form
+			WindowState = FormWindowState.Maximized;
+			FormBorderStyle = FormBorderStyle.None;
+			BackColor = Color.Black;
+			button1.Hide();
+
+			// Starts the background thread to run the game runner
+			launchGameWorker.RunWorkerAsync();
 		}
 
-		private double pixelCompare(List<bool> one, List<bool> two)
+		/// <summary>
+		/// Starts the game runner in a separate thread
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void launchGameWorker_DoWork(object sender, DoWorkEventArgs e)
 		{
-			int equalElements = one.Zip(two, (i, j) => i == j).Count(eq => eq);
-			double percentageEqual = (equalElements / (double)PIXEL_COUNT) * 100.0;
-			return percentageEqual;
+			Console.WriteLine("Starting the paladins game runner.");
+			gameRunner.Start();
 		}
 
-		private List<bool> GetHash(Bitmap bmpSource)
+		/// <summary>
+		/// When the game thread decides to report info to main thread, this is called.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void LaunchGameWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
 		{
-			List<bool> lResult = new List<bool>();
-			for (int j = 0; j < bmpSource.Height; j++)
-			{
-				for (int i = 0; i < bmpSource.Width; i++)
-				{
-					//reduce colors to true / false                
-					lResult.Add(bmpSource.GetPixel(i, j).GetBrightness() < 0.5f);
-				}
-			}
-			return lResult;
+			throw new NotImplementedException();
+		}
+
+		/// <summary>
+		/// When the game thread has finished this is called in main thread
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void LaunchGameWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+		{
+			Console.WriteLine("Done with the game runner, resetting to default styles");
+			gameRunner.Reset();
+			ResetDefaultStyles();
 		}
 	}
 }

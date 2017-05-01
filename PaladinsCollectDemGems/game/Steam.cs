@@ -1,5 +1,6 @@
 ﻿using PaladinsCollectDemGems.exceptions;
 using PaladinsCollectDemGems.tools.native;
+using System;
 using System.Diagnostics;
 using System.Threading;
 
@@ -72,6 +73,23 @@ namespace PaladinsCollectDemGems.game
 
 			// Game should now be foregrounded
 			return game;
+		}
+
+		/// <summary>
+		/// Closes the specified game object by closing its window and returns once the process is dead.
+		/// </summary>
+		/// <param name="game">the steam game object to be killed</param>
+		/// <returns>true if successfully destroyed the process, false otherwise</returns>
+		public static bool CloseGame(SteamGame game) {
+			Console.WriteLine("Attempting to close game.");
+			game.Window?.Close();
+
+			while (game.IsRunning) {
+				Thread.Sleep(500);
+				Console.WriteLine("Attempting to close game.");
+			}
+
+			return game.Window == null;
 		}
 	}
 }
